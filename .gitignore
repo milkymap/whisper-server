@@ -1,0 +1,5 @@
+env/
+workdir/
+whisper_cache/
+
+*.ipc

@@ -1,0 +1,38 @@
+# base image derivation 
+FROM nvcr.io/nvidia/pytorch:21.08-py3
+
+# initial argument and env 
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Paris
+
+# setup required config 
+RUN apt-get update --fix-missing && \
+    apt-get install --yes --no-install-recommends \
+         tzdata dialog apt-utils \ 
+         gcc pkg-config git curl build-essential \
+         ffmpeg libsm6 libxext6 libpcre3 libpcre3-dev && \
+         ulimit -n 32768
+
+# define new user 
+RUN useradd --gid root --create-home solver 
+WORKDIR /home/solver
+
+# define new virutal environment 
+ENV VIRTUAL_ENV=/opt/venv
+RUN chmod -R g+rwx /home/solver && \
+    python -m venv $VIRTUAL_ENV --system-site-packages
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# upgrade and install pip 
+RUN pip install --upgrade pip && \
+    pip install pyzmq click fastapi uvicorn jinja2 websockets python-multipart pydub aiofile openai-whisper 
+
+COPY . ./
+
+# usefull environments 
+ENV WHISPER_CACHE="whisper_cache"
+ENV WORKDIR="workdir"
+
+# entrypoint 
+ENTRYPOINT [ "python", "main.py" ]
+CMD ["--help"]

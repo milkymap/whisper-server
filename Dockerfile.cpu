@@ -1,0 +1,2 @@
+# base image derivation 
+FROM hello-world
