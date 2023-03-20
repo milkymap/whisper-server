@@ -21,10 +21,11 @@ def group(ctx:click.core.Context, use_gpu:bool, workdir:str, path2whisper_cache:
 @click.option('--port', type=int, default=8000)
 @click.option('--host', type=str, default='0.0.0.0')
 @click.option('--model_size', type=click.Choice(['tiny', 'base', 'small', 'medium', 'large']), default='base')
+@click.option('--mounting_path', type=str, default='/', help='root_path of the fastapi')
 @click.pass_context
-def start_service(ctx:click.core.Context, port:int, host:str, model_size:str):
+def start_service(ctx:click.core.Context, port:int, host:str, model_size:str, mounting_path:str):
     processes:List[mp.Process] = [
-        mp.Process(target=start_server, kwargs={'port':port, 'host': host, 'workdir': ctx.obj['workdir']}),
+        mp.Process(target=start_server, kwargs={'port':port, 'host': host, 'workdir': ctx.obj['workdir'], 'mounting_path': mounting_path}),
         mp.Process(target=start_whisper, kwargs={'model_size': model_size, 'path2whisper_cache': ctx.obj['path2whisper_cache']})
     ]
 

@@ -22,10 +22,12 @@ from fastapi.responses import JSONResponse
 from api_schema import ZeroMQConfig, TranscriptionStatus, TranscriptionResponse, MonitoringResponse, TranscriptionRequest
 
 class APIServer:
-    def __init__(self, port:int, host:str, workdir:str):
+    def __init__(self, port:int, host:str, workdir:str, mounting_path:str='/'):
+        assert mounting_path.startswith('/')
         self.port = port 
         self.host = host 
         self.workdir = workdir 
+        self.mounting_path = mounting_path
 
         self.path2memories = path.join(self.workdir, 'memories.pkl')
         self.map_pipeline2status:Dict[str, TranscriptionStatus] = {}
@@ -183,10 +185,10 @@ class APIServer:
 
 
     def run(self):
-        uvicorn.run(app=self.core, port=self.port, host=self.host)
+        uvicorn.run(app=self.core, port=self.port, host=self.host, root_path=self.mounting_path)
 
     def __enter__(self):
-        self.core = FastAPI()
+        self.core = FastAPI(docs_url=self.mounting_path)
         
         self.core.add_event_handler(event_type='startup', func=self.handle_startup)
         self.core.add_event_handler(event_type='shutdown', func=self.handle_shutdown)

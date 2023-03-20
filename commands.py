@@ -2,8 +2,8 @@
 from server import APIServer
 from worker import ZMQWhisper
 
-def start_server(port:int, host:str, workdir:str):
-    with APIServer(port=port, host=host, workdir=workdir) as api_server:
+def start_server(port:int, host:str, workdir:str, mounting_path:str):
+    with APIServer(port=port, host=host, workdir=workdir, mounting_path=mounting_path) as api_server:
         api_server.run()
 
 def start_whisper(model_size:str, path2whisper_cache:str):
