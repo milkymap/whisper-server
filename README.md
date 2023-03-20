@@ -18,6 +18,12 @@ Une API asynchrone pour transcrire des fichiers audio en utilisant la technologi
 3. Installer les dépendances : `pip install -r requirements.txt`
 4. Démarrer l'API : `python app.py`
 
+## Lancer le docker
+```bash
+    docker build -t whisper:0.0 -f Dockerfile.gpu .
+    docker run --rm --name whisper -v path/to/workdir:/home/solver/workdir -v path/to/whisper_cache:/home/solver/whisper_cache  -p local_port:8000 whisper:0.0 --use_gpu start-service --port 8000 --model_size base 
+```
+
 ## API Endpoints
 
 ### POST /transcription
