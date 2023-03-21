@@ -188,7 +188,7 @@ class APIServer:
         uvicorn.run(app=self.core, port=self.port, host=self.host, root_path=self.mounting_path)
 
     def __enter__(self):
-        self.core = FastAPI(docs_url=self.mounting_path)
+        self.core = FastAPI(docs_url='/')
         
         self.core.add_event_handler(event_type='startup', func=self.handle_startup)
         self.core.add_event_handler(event_type='shutdown', func=self.handle_shutdown)

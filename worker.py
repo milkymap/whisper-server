@@ -72,11 +72,13 @@ class ZMQWhisper:
         )
 
     def run(self):
+
+        logger.debug('whisper server is running : ..!')
+
         keep_loop = True 
         while keep_loop:
             try:
                 socket_status = self.router_socket.poll(1000)
-                logger.debug('whisper server is running : ..!')
                 if socket_status == zmq.POLLIN:
                     client_id, _, encoded_message = self.router_socket.recv_multipart()
                     path2audio = encoded_message.decode()
