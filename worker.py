@@ -90,10 +90,10 @@ class ZMQWhisper:
                         basepath, audiofile = path.split(path2audio)
                         filename, _ = audiofile.split('.')
                         
-                        path2text = path.join(basepath, f'{filename}_data.txt')
-                        path2segments = path.join(basepath, f'{filename}_segments.srt')
-                        path2blank_video_file= path.join(basepath, f'{filename}_blank.mp4')
-                        path2subtitled_video_file= path.join(basepath, f'{filename}_subtitled.mp4')
+                        path2text = path.join(basepath, 'data.txt')
+                        path2segments = path.join(basepath, 'segments.srt')
+                        path2blank_video_file= path.join(basepath, 'blank.mp4')
+                        path2subtitled_video_file= path.join(basepath, 'subtitled.mp4')
 
                         path2response_json = path.join(basepath, f'transcription.json')
 
