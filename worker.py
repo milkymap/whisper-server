@@ -12,12 +12,17 @@ from io import StringIO
 from typing import List, Dict 
 
 import subprocess
+from third_party.whisper import load_model
+from third_party.whisper.transcribe import transcribe 
+
+
+
+from typing import Dict, Any
 
 class ZMQWhisper:
-    def __init__(self, model_size:str, path2whisper_cache:str):
-        self.model_size = model_size
-        self.path2whisper_cache = path2whisper_cache
-    
+    def __init__(self, params_map:Dict[str, Any]):
+        self.params_map = params_map
+
     def format_timestamp(self, seconds: float, always_include_hours: bool = False, decimal_marker: str = '.'):
         assert seconds >= 0, "non-negative timestamp expected"
         milliseconds = round(seconds * 1000.0)
@@ -39,7 +44,7 @@ class ZMQWhisper:
         for item in segments:
             id, start, end, text = op.itemgetter('id', 'start', 'end', 'text')(item)
             acc.append(
-                f"{id}\n{self.format_timestamp(start, always_include_hours=True, decimal_marker=',')} --> {self.format_timestamp(end, always_include_hours=True, decimal_marker=',')}\n{text.strip().replace('-->', '->')}\n"
+                f"{id}\n{self.format_timestamp(start, always_include_hours=True, decimal_marker=',')} > {self.format_timestamp(end, always_include_hours=True, decimal_marker=',')}\n{text.strip().replace('>', '->')}\n"
             )
         
         return '\n'.join(acc)
@@ -86,7 +91,8 @@ class ZMQWhisper:
                     self.router_socket.send_string(TranscriptionStatus.RUNNING)
                     
                     try:
-                        transcription = self.model.transcribe(path2audio)
+                        transcription = transcribe(self.model, path2audio, **self.params_map)
+
                         basepath, audiofile = path.split(path2audio)
                         filename, _ = audiofile.split('.')
                         
@@ -134,7 +140,23 @@ class ZMQWhisper:
 
 
     def __enter__(self):
-        self.model = whisper.load_model(self.model_size, download_root=self.path2whisper_cache)
+        self.model = load_model(
+            self.params_map['model_name'], 
+            device=self.params_map['device'], 
+            download_root=self.params_map['model_dir']
+        )
+
+
+        self.params_map.pop('model_name')
+        self.params_map.pop('model_dir')
+        self.params_map.pop('threads')
+        self.params_map.pop('device')
+        
+        self.params_map.pop('port')
+        self.params_map.pop('mounting_path')
+        self.params_map.pop('host')
+        self.params_map.pop("temperature_increment_on_fallback")
+
         logger.info('whisper model was loaded')
 
         self.ctx = zmq.Context()

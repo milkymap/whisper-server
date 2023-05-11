@@ -25,8 +25,9 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # upgrade and install pip 
 RUN pip install --upgrade pip && \
-    pip install pyzmq click fastapi uvicorn jinja2 websockets python-multipart pydub aiofile openai-whisper 
-
+    pip install typing-extensions pyzmq click fastapi uvicorn jinja2 websockets python-multipart pydub aiofile ffmpeg-python transformers &&\
+    pip install git+https://github.com/openai/whisper
+ 
 COPY . ./
 
 # usefull environments 
