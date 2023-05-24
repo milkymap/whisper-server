@@ -1,7 +1,6 @@
 import zmq 
 import json 
 
-import whisper
 import operator as op
 
 from api_schema import ZeroMQConfig, TranscriptionStatus
@@ -44,7 +43,7 @@ class ZMQWhisper:
         for item in segments:
             id, start, end, text = op.itemgetter('id', 'start', 'end', 'text')(item)
             acc.append(
-                f"{id}\n{self.format_timestamp(start, always_include_hours=True, decimal_marker=',')} > {self.format_timestamp(end, always_include_hours=True, decimal_marker=',')}\n{text.strip().replace('>', '->')}\n"
+                f"{id+1}\n{self.format_timestamp(start, always_include_hours=True, decimal_marker=',')} --> {self.format_timestamp(end, always_include_hours=True, decimal_marker=',')}\n{text.strip().replace('>', '->')}\n"
             )
         
         return '\n'.join(acc)
