@@ -87,7 +87,8 @@ class APIServer:
             self.map_pipeline2status[task_id] = TranscriptionStatus.PENDING
 
         async with self.access_card:
-            timeout = 300  # 5mn 
+            timeout = 5 * 3600  # 5H  
+
             dealer_socket:zio.Socket = self.ctx.socket(zmq.DEALER)
             subscriber_socket:zio.Socket = self.ctx.socket(zmq.SUB)
             subscriber_socket.setsockopt_string(zmq.SUBSCRIBE, 'TERMINATE')
@@ -112,6 +113,7 @@ class APIServer:
                         duration = end - start 
                         if duration > timeout:  # 2mn
                             raise TimeoutError('transcription has taken to much time ... (2mn)')
+                    
                     map_socket2status = dict(await poller.poll(timeout=100))
                     if dealer_socket in map_socket2status:
                         if map_socket2status[dealer_socket] == zmq.POLLIN:
